@@ -123,8 +123,11 @@ impl Default for PmLogData {
 /// Opaque ADL client context (`ADL_CONTEXT_HANDLE`).
 type AdlContext = *mut c_void;
 
-/// `ADL_MAIN_MALLOC_CALLBACK`: `void* (*)(int)`.
-type AdlMalloc = extern "C" fn(c_int) -> *mut c_void;
+/// `ADL_MAIN_MALLOC_CALLBACK`: `void* (__stdcall *)(int)`.
+///
+/// The callback is stdcall while the `ADL2_*` entry points are cdecl
+/// (they coincide on x86-64, but the annotations are kept exact).
+type AdlMalloc = unsafe extern "system" fn(c_int) -> *mut c_void;
 
 type FnCreate = unsafe extern "C" fn(AdlMalloc, c_int, *mut AdlContext) -> c_int;
 type FnNumAdapters = unsafe extern "C" fn(AdlContext, *mut c_int) -> c_int;
@@ -163,7 +166,7 @@ unsafe extern "C" {
 ///
 /// Forwards to the shared CRT heap, matching what ADL expects (this is what
 /// the ADL SDK samples and fastfetch do with plain `malloc`).
-extern "C" fn adl_malloc(size: c_int) -> *mut c_void {
+extern "system" fn adl_malloc(size: c_int) -> *mut c_void {
     if size <= 0 {
         std::ptr::null_mut()
     } else {

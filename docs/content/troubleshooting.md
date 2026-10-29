@@ -82,6 +82,8 @@ Let's say you're installing [Iosevka](https://github.com/be5invis/Iosevka). The 
 
 This is a known issue, some sensors may require admin privileges to get sensor data.
 
+Note that AMD GPU temperatures are reported through the AMD display driver, while CPU and motherboard sensors remain unavailable on Windows.
+
 ## Why don't I see dual batteries on Windows reported separately? (e.g. Thinkpads)
 
 This is a known issue which seems to be with how batteries are being detected on Windows.
